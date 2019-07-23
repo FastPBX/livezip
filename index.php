@@ -1,5 +1,5 @@
 <?php
-	
+
 include "CreateZipFile.php";
 include "CreateZipDirectory.php";
 
@@ -23,7 +23,7 @@ if($parts[0] == $urlPrefix)
 	$workspaceByName = $parts[1];
 	// remove .zip extensions
 	$workspaceByName = str_ireplace(".zip", "", $workspaceByName);
-	
+
 	// now try and find the next part in workspace
 	if(strlen($workspaceByName))
 	{
@@ -36,16 +36,23 @@ else
 }
 
 
-function zipDirectoryFromWorkspace($directory) 
+function zipDirectoryFromWorkspace($directory)
 {
 	$zip = new CreateZipDirectory;
-	
+
 	$zip->get_files_from_folder("$directory/","");
 
 	// output live
-	header('Content-disposition: attachment; filename='.'zipper'.'.zip'.'');
-	header('Content-type: application/octetstream');
-	echo $zip->getZippedfile();
+	header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+	header("Cache-Control: post-check=0, pre-check=0", false);
+	header("Pragma: no-cache");
+	header('Content-Disposition: attachment; filename='.'zipper'.'.zip'.'');
+	header('Content-Type: application/zip');
+	$content = $zip->getZippedfile();
+	$length = strlen($content);
+	header('Content-Length: '.$length);
+	echo $content;
+	exit();
 }
 
 
